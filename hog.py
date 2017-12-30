@@ -130,12 +130,18 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
     player = 0  # Which player is about to take a turn, 0 (first) or 1 (second)
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
-    
+
+    say = both(announce_highest(0), both(announce_highest(1), announce_lead_changes()))
     while score0 < 100 and score1 < 100:
         score0 += take_turn(strategy0(score0, score1), score1, dice)
+        if score0 >= 100:
+            return score0, score1
         score1 += take_turn(strategy1(score1, score0), score0, dice)
+        if score1 >= 100:
+            return score0, score1
         if is_swap == True:
             score0, score1 = score1, score0
+        say = say(score0, score1)
         
     # END PROBLEM 5
     return score0, score1
@@ -193,6 +199,14 @@ def both(f, g):
     """
     # BEGIN PROBLEM 6
     "*** YOUR CODE HERE ***"
+
+    def new_commentary(score0, score1, f = f, g = g):
+        f = f(score0, score1)
+        g = g(score0, score1)
+        return both(f, g)
+
+    return new_commentary
+    
     # END PROBLEM 6
 
 
@@ -214,6 +228,22 @@ def announce_highest(who, previous_high=0, previous_score=0):
     assert who == 0 or who == 1, 'The who argument should indicate a player.'
     # BEGIN PROBLEM 7
     "*** YOUR CODE HERE ***"
+
+    def highest_commentary(score0, score1, previous_high = previous_high, previous_score = previous_score):
+        if who == 0:
+            score = score0
+        elif who == 1:
+            score = score1
+        if score - previous_score > previous_high:
+            if score - previous_score == 1:
+                print(score - previous_score, 'point! That\'s the biggest gain yet for Player', who)
+            else:
+                print(score - previous_score, 'points! That\'s the biggest gain yet for Player', who)
+            previous_high = score - previous_score
+        previous_score = score
+        return announce_highest(who, previous_high, previous_score)
+    return highest_commentary
+
     # END PROBLEM 7
 
 
@@ -362,3 +392,4 @@ def run(*args):
 
     if args.run_experiments:
         run_experiments()
+
