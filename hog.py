@@ -283,6 +283,16 @@ def make_averaged(fn, num_samples=1000):
     """
     # BEGIN PROBLEM 8
     "*** YOUR CODE HERE ***"
+    
+    def return_averaged(*args):
+        total = 0
+        i = 0
+        while i < num_samples:
+            total += fn(*args)
+            i += 1
+        return total / num_samples
+    return return_averaged
+
     # END PROBLEM 8
 
 
@@ -297,6 +307,18 @@ def max_scoring_num_rolls(dice=six_sided, num_samples=1000):
     """
     # BEGIN PROBLEM 9
     "*** YOUR CODE HERE ***"
+
+    average_turn_score = make_averaged(roll_dice, num_samples)
+    num_rolls = 1
+    best_num_rolls = 0
+    highest_average = 0
+    while num_rolls <= 10:
+        if average_turn_score(num_rolls, dice) > highest_average:
+            highest_average = average_turn_score(num_rolls, dice)
+            best_num_rolls = num_rolls
+        num_rolls += 1
+    return best_num_rolls
+
     # END PROBLEM 9
 
 
@@ -345,7 +367,12 @@ def bacon_strategy(score, opponent_score, margin=8, num_rolls=4):
     rolls NUM_ROLLS otherwise.
     """
     # BEGIN PROBLEM 10
-    return 4  # Replace this statement
+
+    if free_bacon(opponent_score) >= margin:
+        return 0
+    else:
+        return num_rolls
+
     # END PROBLEM 10
 
 
@@ -355,6 +382,12 @@ def swap_strategy(score, opponent_score, margin=8, num_rolls=4):
     NUM_ROLLS.
     """
     # BEGIN PROBLEM 11
+    post_bacon_score = score + free_bacon(opponent_score)
+    if is_swap(post_bacon_score, opponent_score) and opponent_score > score:
+        return 0
+    else:
+        bacon_strategy(score, opponent_score, margin, num_rolls)
+
     return 4  # Replace this statement
     # END PROBLEM 11
 
@@ -392,4 +425,3 @@ def run(*args):
 
     if args.run_experiments:
         run_experiments()
-
